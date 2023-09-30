@@ -52,5 +52,3 @@ Take note you can use Titan Embeddings to obtain the embeddings of the user ques
 ## Notebooks
 
 1. [Q&A with model knowledge and small context](./00_qa_w_bedrock_titan.ipynb)
-
-2. [Q&A with RAG](./01_qa_w_rag_claude.ipynb)
