@@ -11,18 +11,12 @@ Labs include:
 - **Text Generation** \[Estimated time to complete - 30 mins\]
 - **Text Summarization** \[Estimated time to complete - 30 mins\]
 - **Questions Answering** \[Estimated time to complete - 45 mins\]  
-- **Chatbot** \[Estimated time to complete - 45 mins\]
-- **Image Generation** \[Estimated time to complete - 30 mins\]
-- **Code Generation** \[Estimated time to complete - 30 mins\]
 
 <div align="center">
 
 ![imgs/11-overview](imgs/11-overview.png "Overview of the different labs in the workshop")
 
 </div>
-
-You can also refer to these [Step-by-step guided instructions on the workshop website](https://catalog.us-east-1.prod.workshops.aws/workshops/a4bdb007-5600-4368-81c5-ff5b4154f518/en-US).
-
 
 ## Getting started
 
@@ -72,7 +66,7 @@ Once your notebook environment is set up, clone this workshop repository into it
 
 ```sh
 sudo yum install -y unzip
-git clone https://github.com/aws-samples/amazon-bedrock-workshop.git
+git clone https://github.com/SherryXDing/FINRA-Bedrock-Workshop
 cd amazon-bedrock-workshop
 ```
 
@@ -90,8 +84,6 @@ This repository contains notebook examples for the Bedrock Architecture Patterns
 
 ### Generation
 
-- [Simple use case with boto3](./01_Generation/00_generate_w_bedrock.ipynb): In this notebook, you generate text using Amazon Bedrock. We demonstrate consuming the Amazon Titan model directly with boto3 
-- [Simple use case with LangChain](./01_Generation/01_zero_shot_generation.ipynb): We then perform the same task but using the popular framework LangChain
 - [Generation with additional context](./01_Generation/02_contextual_generation.ipynb): We then take this further by enhancing the prompt with additional context in order to improve the response.
 
 ### Summarization
@@ -102,27 +94,5 @@ This repository contains notebook examples for the Bedrock Architecture Patterns
 ### Question Answering
 
 - [Simple questions with context](./03_QuestionAnswering/00_qa_w_bedrock_titan.ipynb): This notebook shows a simple example answering a question with given context by calling the model directly. 
-- [Answering questions with Retrieval Augmented Generation](./03_QuestionAnswering/01_qa_w_rag_claude.ipynb): We can improve the above process by implementing an architecure called Retreival Augmented Generation (RAG). RAG retrieves data from outside the language model (non-parametric) and augments the prompts by adding the relevant retrieved data in context.
 
-### Chatbot
 
-- [Chatbot using Claude](./04_Chatbot/00_Chatbot_Claude.ipynb): This notebook shows a chatbot using Claude
-- [Chatbot using Titan](./04_Chatbot/00_Chatbot_Titan.ipynb): This notebook shows a chatbot using Titan
-
-### Text to Image
-
-- [Image Generation with Stable Diffusion](./05_Image/Bedrock%20Stable%20Diffusion%20XL.ipynb): This notebook demonstrates image generation with using the Stable Diffusion model
-
-### Code Generation, SQL Generation, Code Translation and Explanation
-
-1. [Code Generation](./06_CodeGeneration/00_code_generatation_w_bedrock.ipynb): Demonstrates how to generate Python code using Natural language. It shows examples of prompting to generate simple functions, classes, and full programs in Python for Data Analyst to perform sales analysis on a given Sales CSV dataset.
-
-2. [Database or SQL Query Generation](./06_CodeGeneration/01_sql_query_generate_w_bedrock.ipynb) : Focuses on generating SQL queries with Amazon Bedrock APIs. It includes examples of generating both simple and complex SQL statements for a given data set and database schema. 
-
-3. [Code Explanation](./06_CodeGeneration/02_code_interpret_w_langchain.ipynb) : Uses Bedrock's foundation models to generate explanations for complex C++ code snippets. It shows how to carefully craft prompts to get the model to generate comments and documentation that explain the functionality and logic of complicated C++ code examples. Prompts can be easily updated for another programming languages.
-
-4. [Code Translation ](./06_CodeGeneration/03_code_translate_w_langchain.ipynb) : Guides you through translating C++ code to Java using Amazon Bedrock and LangChain APIs. It shows techniques for prompting the model to port C++ code over to Java, handling differences in syntax, language constructs, and conventions between the languages.
-
-### Entity Extraction
-
-- [Entity Extraction with Claude v2](./08_EntityExtraction/entitiy_extraction.ipynb): This notebook shows how LLM can be used to extract specific information from natural text.
