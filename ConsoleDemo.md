@@ -22,7 +22,6 @@ Please note that the link above will send you to the console in the US East 1 (N
 
 ![](./imgs/console-region-selection.png)
 
-
 Once you've logged into the console and confirmed you're in the correct region, you can navigate to the playgrounds by finding them in the left hand menu, which can be expanded using the menu button in the top left corner.
 
 ![](./imgs/bedrock-menu.png)
@@ -120,3 +119,153 @@ Setting the length parameter to a significantly higher number (perhaps all the w
 Feel free to play around with the other parameters to see how they may impact the responses provided by the model.
 
 
+## 02_Summarization
+
+Large language models like Titan can also summarize text. For this example, switch to the Text playground from the left hand menu in the console.
+
+As before, select the Amazon model category and the Titan Text G1 - Express model. Once you've selected the model, your console page should appear as pictured below.
+
+![](imgs/text-playground.png)
+
+
+### Short Text Summarization
+We'll follow along with the prompts from the Summarization module here. For the first, we're going to ask the model to summarize the announcement for Amazon Bedrock, which is copied below:
+
+
+> Please provide a summary of the following text. Do not add any information that is not mentioned in the text below.
+>
+>AWS took all of that feedback from customers, and today we are excited to announce Amazon Bedrock, a new service that makes FMs from AI21 Labs, Anthropic Stability AI, and Amazon accessible via an API. 
+> 
+> Bedrock is the easiest way for customers to build and scale generative AI-based applications using FMs, democratizing access for all builders. Bedrock will offer the ability to access a range of powerful FMs for text and images—including Amazons Titan FMs, which consist of two new LLMs we’re also announcing today—through a scalable, reliable, and secure AWS managed service. 
+> 
+> With Bedrock’s serverless experience, customers can easily find the right model for what they’re trying to get done, get started quickly, privately customize FMs with their own data, and easily integrate and deploy them into their applications using the AWS tools and capabilities they are familiar with, without having to manage any infrastructure (including integrations with Amazon SageMaker ML features like Experiments to test different models and Pipelines to manage their FMs at scale).
+
+You can copy the text from the cell below.
+
+``` 
+Please provide a summary of the following text. Do not add any information that is not mentioned in the text below.
+
+AWS took all of that feedback from customers, and today we are excited to announce Amazon Bedrock, a new service that makes FMs from AI21 Labs, Anthropic Stability AI, and Amazon accessible via an API.
+Bedrock is the easiest way for customers to build and scale generative AI-based applications using FMs, democratizing access for all builders. Bedrock will offer the ability to access a range of powerful FMs for text and images—including Amazons Titan FMs, which consist of two new LLMs we’re also announcing today—through a scalable, reliable, and secure AWS managed service. With Bedrock’s serverless experience, customers can easily find the right model for what they’re trying to get done, get started quickly, privately customize FMs with their own data, and easily integrate and deploy them into their applications using the AWS tools and capabilities they are familiar with, without having to manage any infrastructure (including integrations with Amazon SageMaker ML features like Experiments to test different models and Pipelines to manage their FMs at scale). 
+```
+
+Without changing the inference parameters, you can see that the model does a fairly decent job at summarizing the announcement, with its summary in green text immediately below the announcement text.
+
+![](imgs/short-summary.png)
+
+Feel free to tweak the parameters and re-run the prompt to see how it impacts the response. For example, increasing the temperature will change the specific details included in the summary. 
+
+In the background, your console session is interacting with the `bedrock` and `bedrock-runtime` application programming interfaces (APIs). You can see the request being sent to the API by clicking the "View API request" button in the lower right corner of the Text playground window. The a truncated version of the previous example's API request is captured below:
+
+```
+{
+  "modelId": "amazon.titan-text-express-v1",
+  "contentType": "application/json",
+  "accept": "*/*",
+  "body": "{\"inputText\":\"Please provide a summary of the following text. Do not add any information...without managing any infrastructure.\",\"textGenerationConfig\":{\"maxTokenCount\":512,\"stopSequences\":[],\"temperature\":0,\"topP\":0.9}}"
+}
+```
+
+As you can see, the console has formatted your prompt along with your selected inference parameters and is prepared to send it to the `bedrock-runtime` API. If you choose to complete the remaining modules, you'll create these API requests manually. For now, just know that the code within the Console is creating and sending these requests on your behalf under the hood.
+
+
+### Long Text Summarization
+Large language models are also capable of summarizing longer text. In some cases, the text may be sufficiently long that it must be split up across multiple "chunks" that are then provided to the model. Within the console, we'll simply provide the entirety of the text we want summarized. For this example, we'll use Andy Jassy's 2022 Letter to Amazon Shareholders, the text of which can be found in this repository at [02_Summarization/letters/2022-letter.txt](02_Summarization/letters/2022-letter.txt).
+
+Before providing the text to the model, we'll need to provide it with instructions what to do. We'll add the following to the top of our prompt:
+
+> Please provide a summary for the following text. Use only the information below to create the summary:
+
+Now, open the letter mentioned above and copy all of the text onto your clipboard. Paste it beneath your prompt, and hit run.
+
+![](imgs/jeff-bezos.png)
+
+Wait...Jeff who? Wasn't his [second letter to the shareholders](http://media.corporate-ir.net/media_files/irol/97/97664/reports/Shareholderletter98.pdf) written back in 1998?
+
+As we can see, the model made a mistake here. Andy's letter to the shareholders doesn't mention his or Jeff's names--how did it come to the conclusion that Jeff was still CEO? Chances are, the data upon which the model was trained maintains such a strong association between the concepts of `Amazon`, `Jeff Bezos`, and `CEO` that his position in that role was assumed to still be accurate. 
+
+Let's see if through prompt engineering we can correct that error by changing the prompt we provide the model. Change the prompt ahead of the text to say
+> Please use the following text and what you already know about Amazon to create a summary:
+
+You should notice that upon execution, the model now correctly ascribes the letter to the current Amazon CEO, Andy Jassy.
+
+![](imgs/andy-jassy.png)
+
+Manipulating the prompts given to the model is one of the most important methods you'll use to improve the responses that are generated.
+
+
+## 03_Question Answering
+
+As mentioned before, large language models are trained to emulate a strong understanding of natural language. They are _not_ trained to be experts in every particular field. Sometimes, you'll want to use a model to answer specific questions about a niche field. In order to accomplish this, we provide additional information to the model that it can use to address our prompts.
+
+This method relies on a technique called retrieval augmented generation (RAG), which combines the benefits of retrieval-based generation and attention-based generation. RAG uses a retrieval model to select relevant documents from a dataset and then uses an attention-based model to generate a summary or paraphrase of the selected content.
+
+For example, let's prompt the model to help us change a tire on our Audi A8. 
+
+![](imgs/audi-spare.png)
+
+While these instructions seem correct, the Audi A8 doesn't have a spare tire. Instead, it has a tire repair kit with which a driver can patch their tire. For most cars, the instructions provided are appropriate. In this particular case, however, the model is guessing incorrectly based on what it believe generally to be true about vehicle maintenance. 
+
+Let's ask it to take a guess about something that doesn't exist--the Amazon Tirana:
+
+![](imgs/tirana.png)
+
+The model assumed that the imaginary Tirana is actually a bicycle, and provided general instructions about repairing a flat tire on a bicycle. The Tirana doesn't exist, so we want to make sure the model won't provide an incorrect answer if it doesn't know. To achieve that, we simply specify as much in the prompt:
+
+![](imgs/tirana-notsure.png)
+
+Now, Titan admits that it doesn't know how to repair a flat tire on the Tirana, but still provides general steps (that in this case, happens to be almost correct). Let's take it one step further and revisit our stranded Audi. If we happen to have the owner's manual, we can provide it as context to the model so that it can be used by the model to provide a better answer. I've copied a (fictional) portion of the owner's manual below:
+
+> Tires and tire pressure:
+>
+> Tires are made of black rubber and are mounted on the wheels of your vehicle. They provide the necessary grip for driving, cornering, and braking. Two important factors to consider are tire pressure and tire wear, as they can affect the performance and handling of your car.
+>
+> Where to find recommended tire pressure:
+>
+> You can find the recommended tire pressure specifications on the inflation label located on the driver's side B-pillar of your vehicle. Alternatively, you can refer to your vehicle's manual for this information. The recommended tire pressure may vary depending on the speed and the number of occupants or maximum load in the vehicle.
+>
+> Reinflating the tires:
+>
+> When checking tire pressure, it is important to do so when the tires are cold. This means allowing the vehicle to sit for at least three hours to ensure the tires are at the same temperature as the ambient temperature.
+>
+>To reinflate the tires:
+>
+>    Check the recommended tire pressure for your vehicle.
+>    Follow the instructions provided on the air pump and inflate the tire(s) to the correct pressure.
+>    In the center display of your vehicle, open the "Car status" app.
+>    Navigate to the "Tire pressure" tab.
+>    Press the "Calibrate pressure" option and confirm the action.
+>    Drive the car for a few minutes at a speed above 30 km/h to calibrate the tire pressure.
+>
+> Note: In some cases, it may be necessary to drive for more than 15 minutes to clear any warning symbols or messages related to tire pressure. If the warnings persist, allow the tires to cool down and repeat the above steps.
+>
+>Flat Tire:
+>
+>If you encounter a flat tire while driving, you can temporarily seal the puncture and reinflate the tire using a tire mobility kit. This kit is typically stored under the lining of the luggage area in your vehicle.
+>
+>Instructions for using the tire mobility kit:
+>
+>    Open the tailgate or trunk of your vehicle.
+>    Lift up the lining of the luggage area to access the tire mobility kit.
+>    Follow the instructions provided with the tire mobility kit to seal the puncture in the tire.
+>    After using the kit, make sure to securely put it back in its original location.
+>    Contact Audi or an appropriate service for assistance with disposing of and replacing the used sealant bottle.
+>
+>Please note that the tire mobility kit is a temporary solution and is designed to allow you to drive for a maximum of 10 minutes or 8 km (whichever comes first) at a maximum speed of 80 km/h. It is advisable to replace the punctured tire or have it repaired by a professional as soon as possible.
+
+You can find the content above at [03_QuestionAnswering/data/audi.txt](03_QuestionAnswering/data/audi.txt). We'll change our prompt to reference the content from the manual as context with which it can address your prompt, pulling out the specific information you need. Start by beginning your prompt with:
+
+>I'm going to provide an excerpt from the Audi owner's manual. Please use only this information to tell me how to repair a flat tire on my Audi A8.
+
+Beneath this, copy the text from the owner's manual and run the prompt. Now, you should see the steps extracted from the information you provided. 
+
+![](imgs/audi-correct.png)
+
+By providing context that the model needs to address the prompt allows you to build from the model's general understanding of natural language and apply it to specific domains that are relevant to your use cases.
+
+
+## Wrapping it all up
+
+In this lab session, we learned about interacting with Amazon Bedrock via the AWS Console. You saw the impact that inference parameters had on the responses provided by a model to a given a prompt. We leveraged RAG to find the specific and accurate answer to questions based large volumes of information we know might be relevant. 
+
+Because Amazon Bedrock executes your prompts against models on your behalf, there's nothing for you to clean up in this lab. Simply log out of your console session and follow whatever steps are necessary to invalidate any temporary credentials used for the lab.
